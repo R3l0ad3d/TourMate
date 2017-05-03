@@ -24,9 +24,11 @@ public class UserInformation {
         this.eMail = eMail;
     }
 
-    public UserInformation(String userName, String passWord, String fullName,
-                           String gender, String dateOfBirth, String eMail,
-                           String mobileNo, String area, String imageURL) {
+    public UserInformation(String userID, String userName, String passWord,
+                           String fullName, String gender, String dateOfBirth,
+                           String eMail, String mobileNo, String area, String imageURL,
+                           String specialCode) {
+        this.userID = userID;
         this.userName = userName;
         this.passWord = passWord;
         this.fullName = fullName;
@@ -36,6 +38,7 @@ public class UserInformation {
         this.mobileNo = mobileNo;
         this.area = area;
         this.imageURL = imageURL;
+        this.specialCode = specialCode;
     }
 
     public String getUserID() {
