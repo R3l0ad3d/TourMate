@@ -9,16 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.r3l0ad3d.tourmate.R;
-import com.example.r3l0ad3d.tourmate.databinding.FragmentEventListBinding;
+import com.example.r3l0ad3d.tourmate.databinding.FragmentCreateEventBinding;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class EventListFragment extends Fragment {
+public class CreateEventFragment extends Fragment {
 
-    private FragmentEventListBinding binding;
+    private FragmentCreateEventBinding binding;
 
-    public EventListFragment() {
+    public CreateEventFragment() {
         // Required empty public constructor
     }
 
@@ -26,10 +26,9 @@ public class EventListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View view= inflater.inflate(R.layout.fragment_event_list, container, false);
+        // Inflate the layout for this fragment
+        View view= inflater.inflate(R.layout.fragment_create_event, container, false);
         binding = DataBindingUtil.bind(view);
-
         return view;
     }
 

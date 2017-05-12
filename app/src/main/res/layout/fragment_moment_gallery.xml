@@ -4,15 +4,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="com.example.r3l0ad3d.tourmate.Fragments.ShareMomentFragment">
+        tools:context="com.example.r3l0ad3d.tourmate.Fragments.MomentGalleryFragment">
 
         <!-- TODO: Update blank fragment layout -->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvShareMoment"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:text="@string/hello_blank_fragment" />
 
     </LinearLayout>
 </layout>
