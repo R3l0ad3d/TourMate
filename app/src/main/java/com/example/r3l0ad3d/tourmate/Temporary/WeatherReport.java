@@ -1,13 +1,7 @@
-package com.example.r3l0ad3d.tourmate;
+package com.example.r3l0ad3d.tourmate.Temporary;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.example.r3l0ad3d.tourmate.Temporary.WeatherReport;
-import com.example.r3l0ad3d.tourmate.Weather.Adapter.AdapterWeatherForeCast;
 import com.example.r3l0ad3d.tourmate.Weather.Interface.WeatherApi;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.ForeCastReport;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.WeatherModelResponse;
@@ -21,42 +15,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class TestActivity extends AppCompatActivity {
+/**
+ * Created by r3l0ad3d on 5/15/17.
+ */
 
-    private RecyclerView recyclerView;
-
-    private AdapterWeatherForeCast adapter;
-    private List<ForeCastReport> foreCastReportList;
-    private String cityName = "Dhaka";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
-
-        foreCastReportList = new ArrayList<>();
-
-        recyclerView = (RecyclerView) findViewById(R.id.rvWeatherForeCast);
-
-        adapter = new AdapterWeatherForeCast(this,foreCastReportList);
-
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        recyclerView.setLayoutManager(manager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
-
-        getReport();
-
-        /*WeatherReport report = new WeatherReport();
-        report.getReport();
-        if(report.getForeCastReportList().size()>0){
-            foreCastReportList.addAll(report.getForeCastReportList());
-            adapter.notifyDataSetChanged();
-        }*/
-
-    }
-
-    private void getReport() {
+public class WeatherReport {
+    private String cityName="dhaka";
+    private List<ForeCastReport> foreCastReportList = new ArrayList<>();
+    public void getReport() {
 
         final String BASE_URL = "https://query.yahooapis.com/";
 
@@ -78,7 +44,6 @@ public class TestActivity extends AppCompatActivity {
                     WeatherModelResponse responsList = response.body();
                     ForeCastReport reportList = new ForeCastReport(responsList);
                     foreCastReportList.addAll(reportList.getForeCastReportList());
-                    adapter.notifyDataSetChanged();
                 }else {
                     Log.d("Error","Connection Problem");
                 }
@@ -91,5 +56,7 @@ public class TestActivity extends AppCompatActivity {
         });
     }
 
-
+    public List<ForeCastReport> getForeCastReportList() {
+        return foreCastReportList;
+    }
 }

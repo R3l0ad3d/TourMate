@@ -64,6 +64,10 @@ public class EventListFragment extends Fragment {
     }
 
     private void populateListFromDatabse() {
+        for(int i =0;i<10;i++){
+            Event event = new Event("today","India","tomorrow","tomorrow next","10000");
+            eventList.add(event);
+        }
     }
 
 }
