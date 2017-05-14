@@ -7,7 +7,6 @@ package com.example.r3l0ad3d.tourmate.ModelClass;
 public class Event {
     private String userId;
     private String eventId;
-    private String eventName;
     private String eventCreateDate;
     private String eventPlace;
     private String toDate;
@@ -15,10 +14,9 @@ public class Event {
     private String estimatedBudget;
     private String spicalCode;
 
-    public Event(String eventName, String eventCreateDate,
+    public Event(String eventCreateDate,
                  String eventPlace, String toDate, String fromDate,
                  String estimatedBudget) {
-        this.eventName = eventName;
         this.eventCreateDate = eventCreateDate;
         this.eventPlace = eventPlace;
         this.toDate = toDate;
@@ -26,12 +24,10 @@ public class Event {
         this.estimatedBudget = estimatedBudget;
     }
 
-    public Event(String userId, String eventId, String eventName,
-                 String eventCreateDate, String eventPlace, String toDate,
-                 String fromDate, String estimatedBudget, String spicalCode) {
+    public Event(String userId, String eventId,String eventCreateDate, String eventPlace,
+                 String toDate,String fromDate, String estimatedBudget, String spicalCode) {
         this.userId = userId;
         this.eventId = eventId;
-        this.eventName = eventName;
         this.eventCreateDate = eventCreateDate;
         this.eventPlace = eventPlace;
         this.toDate = toDate;
@@ -54,14 +50,6 @@ public class Event {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
     }
 
     public String getEventCreateDate() {

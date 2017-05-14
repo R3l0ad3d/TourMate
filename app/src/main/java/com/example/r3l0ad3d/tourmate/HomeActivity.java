@@ -16,7 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.r3l0ad3d.tourmate.Fragments.CreateEventFragment;
 import com.example.r3l0ad3d.tourmate.Fragments.EventListFragment;
+import com.example.r3l0ad3d.tourmate.Fragments.MomentGalleryFragment;
 import com.example.r3l0ad3d.tourmate.Fragments.ProfileFragment;
 
 public class HomeActivity extends AppCompatActivity
@@ -29,14 +31,6 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -94,10 +88,12 @@ public class HomeActivity extends AppCompatActivity
             fragment = new ProfileFragment();
         } else if (id == R.id.event_create) {
 
+            fragment = new CreateEventFragment();
         } else if (id == R.id.event_list) {
             fragment = new EventListFragment();
 
         } else if (id == R.id.moment_gallery) {
+            fragment = new MomentGalleryFragment();
 
         } else if (id == R.id.nav_share) {
 
@@ -105,7 +101,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
-        ft.replace(R.id.replaceLayout,fragment);
+        ft.replace(R.id.replaceLayout,fragment).commit();
         ft.addToBackStack(null);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
