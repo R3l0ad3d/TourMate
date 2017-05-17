@@ -17,8 +17,10 @@ public class UserInformation {
     private String imageURL;
     private String specialCode;
 
-    public UserInformation(String userName, String passWord, String fullName, String eMail) {
-        this.userName = userName;
+    public UserInformation() {
+    }
+
+    public UserInformation(String passWord, String fullName, String eMail) {
         this.passWord = passWord;
         this.fullName = fullName;
         this.eMail = eMail;

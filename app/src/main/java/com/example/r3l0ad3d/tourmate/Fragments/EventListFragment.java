@@ -11,14 +11,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.r3l0ad3d.tourmate.Adapter.AdapterEventList;
+import com.example.r3l0ad3d.tourmate.DatabseConnectionCheck;
+import com.example.r3l0ad3d.tourmate.HomeActivity;
 import com.example.r3l0ad3d.tourmate.ModelClass.Event;
 import com.example.r3l0ad3d.tourmate.R;
 import com.example.r3l0ad3d.tourmate.databinding.FragmentEventListBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +38,13 @@ public class EventListFragment extends Fragment {
     private FragmentEventListBinding binding;
     private AdapterEventList adapter;
     private List<Event> eventList;
+
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
+    private DatabseConnectionCheck getUserId;
+
+    private static  String userId;
 
     public EventListFragment() {
         // Required empty public constructor
@@ -40,15 +57,22 @@ public class EventListFragment extends Fragment {
 
         View view= inflater.inflate(R.layout.fragment_event_list, container, false);
         binding = DataBindingUtil.bind(view);
+
+        getUserId = new HomeActivity();
+        userId = getUserId.getUser();
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("root").child("Event").child(userId);
         eventList = new ArrayList<>();
 
-        populateListFromDatabse();
 
         adapter = new AdapterEventList(getContext(),eventList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
         binding.rvEventList.setHasFixedSize(true);
         binding.rvEventList.setLayoutManager(layoutManager);
         binding.rvEventList.setAdapter(adapter);
+
+        populateListFromDatabse();
 
         binding.fabCreateEventEL.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,10 +88,23 @@ public class EventListFragment extends Fragment {
     }
 
     private void populateListFromDatabse() {
-        for(int i =0;i<10;i++){
-            Event event = new Event("today","India","tomorrow","tomorrow next","10000");
-            eventList.add(event);
-        }
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot ds:dataSnapshot.getChildren()){
+                    eventList.add(ds.getValue(Event.class));
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getContext(),databaseError.getMessage().toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
 }

@@ -1,11 +1,11 @@
 package com.example.r3l0ad3d.tourmate.Fragments;
 
 
+import android.app.ProgressDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,17 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.r3l0ad3d.tourmate.Adapter.AdapterExpandableList;
+import com.example.r3l0ad3d.tourmate.Adapter.AdapterNearByItem;
+import com.example.r3l0ad3d.tourmate.DatabseConnectionCheck;
+import com.example.r3l0ad3d.tourmate.HomeActivity;
+import com.example.r3l0ad3d.tourmate.ModelClass.Event;
 import com.example.r3l0ad3d.tourmate.R;
+import com.example.r3l0ad3d.tourmate.Weather.Adapter.AdapterWeatherForeCast;
 import com.example.r3l0ad3d.tourmate.Weather.Interface.WeatherApi;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.ForeCastReport;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.WeatherModelResponse;
 import com.example.r3l0ad3d.tourmate.databinding.FragmentEventListItemShowBinding;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,16 +45,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class EventListItemShowFragment extends Fragment {
 
     private FragmentEventListItemShowBinding binding ;
-    private Handler handler;
+
 
     private static String cityName="dhaka";
-    private static  List<ForeCastReport> foreCastReportList ;
+    private static  List<ForeCastReport> foreCastReportList;
+    private static List<String> nearByItemList;
 
-    private List<String> parentList;
-    private List<String> childList;
-    private Map<String,List<List<String>>> childs;
-    private AdapterExpandableList adapter;
+    private AdapterNearByItem adapterNearByItem;
+    private AdapterWeatherForeCast adapterWeatherForeCast;
 
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
+    private DatabseConnectionCheck getUser;
+    private static String userID;
+    private static String eventID;
+
+    private Event event;
 
     public EventListItemShowFragment() {
         // Required empty public constructor
@@ -61,45 +76,52 @@ public class EventListItemShowFragment extends Fragment {
 
         binding = DataBindingUtil.bind(view);
         foreCastReportList = new ArrayList<>();
+        nearByItemList = new ArrayList<>();
 
-        parentList = new ArrayList<>();
-        childList = new ArrayList<>();
-        childs = new HashMap<>();
+        getUser = new HomeActivity();
+        userID = getUser.getUser();
 
-        setData();
+        event = (Event) getArguments().getSerializable("event");
+        eventID=event.getEventId();
+        cityName = event.getEventPlace();
 
-        adapter = new AdapterExpandableList(getContext(),parentList,childs);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("root").child("Event").child(userID).child(eventID);
 
-        binding.exList.setAdapter(adapter);
 
-        //handler = new Handler(Looper.getMainLooper());
+        binding.tvEventPlaceELIS.setText(event.getEventPlace());
+        binding.tvFromDateELIS.setText(event.getFromDate());
+        binding.tvToDateELIS.setText(event.getToDate());
+        binding.tvEstimatedBudgetELIS.setText(event.getEstimatedBudget());
 
-        //getReport();
+        adapterNearByItem = new AdapterNearByItem(getContext(),nearByItemList);
+        adapterWeatherForeCast = new AdapterWeatherForeCast(getContext(),foreCastReportList);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+
+        binding.rvForeCastWeatherELIS.hasFixedSize();
+        binding.rvNearByELIS.hasFixedSize();
+
+        binding.rvForeCastWeatherELIS.setLayoutManager(layoutManager);
+        binding.rvNearByELIS.setLayoutManager(layoutManager1);
+
+        binding.rvForeCastWeatherELIS.setAdapter(adapterWeatherForeCast);
+        binding.rvNearByELIS.setAdapter(adapterNearByItem);
+
+        getReport();
+        setNearByData();
 
         //Toast.makeText(getContext(),""+foreCastReportList.size(),Toast.LENGTH_LONG).show();
 
         return view;
     }
 
-    private void setData() {
-        parentList.add("Weather");
-        parentList.add("Near By");
-        for(int i=0;i<2;i++){
-            List<String> list = new ArrayList<>();
-            List<List<String>> tmp = new ArrayList<>();
-            for(int j=0;j<5;j++){
-                list.add("Hospital");
-            }
-            tmp.add(list);
-            childs.put(parentList.get(i),tmp);
-        }
-    }
 
     private void getReport() {
 
         final String BASE_URL = "https://query.yahooapis.com/";
 
-        final List<ForeCastReport> ret = new ArrayList<>();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -117,23 +139,12 @@ public class EventListItemShowFragment extends Fragment {
             public void onResponse(Call<WeatherModelResponse> call, Response<WeatherModelResponse> response) {
                 if(response.code()==200){
                     WeatherModelResponse responsList = response.body();
-                    if(responsList.getQuery().getResults().getChannel().getItem().getForecast().size()>0){
-                        final ForeCastReport reportList = new ForeCastReport(responsList);
 
-                        foreCastReportList.addAll(reportList.getForeCastReportList());
-                        /*handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //foreCastReportList.addAll(reportList.getForeCastReportList());
-                                setForeCastReportList(reportList.getForeCastReportList());
-                                //Toast.makeText(getContext(),""+foreCastReportList.size(),Toast.LENGTH_LONG).show();
-                            }
-                        });*/
-                    }
-                    else{
-                        Toast.makeText(getContext(),"Empty Data",Toast.LENGTH_LONG).show();
-                    }
-                    //Toast.makeText(getContext(),""+foreCastReportList.size(),Toast.LENGTH_LONG).show();
+                    final ForeCastReport reportList = new ForeCastReport(responsList);
+
+                    foreCastReportList.addAll(reportList.getForeCastReportList());
+                    adapterWeatherForeCast.notifyDataSetChanged();
+
                 }else {
                     Log.d("Error","Connection Problem");
                 }
@@ -145,6 +156,13 @@ public class EventListItemShowFragment extends Fragment {
             }
         });
 
+    }
+
+    private void setNearByData(){
+        for(int i=0;i<10;i++){
+            nearByItemList.add("Hospital");
+        }
+        adapterNearByItem.notifyDataSetChanged();
     }
 
 }

@@ -1,10 +1,12 @@
 package com.example.r3l0ad3d.tourmate.ModelClass;
 
+import java.io.Serializable;
+
 /**
  * Created by r3l0ad3d on 5/4/17.
  */
 
-public class Event {
+public class Event implements Serializable{
     private String userId;
     private String eventId;
     private String eventCreateDate;
@@ -13,6 +15,9 @@ public class Event {
     private String fromDate;
     private String estimatedBudget;
     private String spicalCode;
+
+    public Event() {
+    }
 
     public Event(String eventCreateDate,
                  String eventPlace, String toDate, String fromDate,

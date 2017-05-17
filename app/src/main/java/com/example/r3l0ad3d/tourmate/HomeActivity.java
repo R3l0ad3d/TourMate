@@ -1,6 +1,7 @@
 package com.example.r3l0ad3d.tourmate;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -20,9 +21,16 @@ import com.example.r3l0ad3d.tourmate.Fragments.CreateEventFragment;
 import com.example.r3l0ad3d.tourmate.Fragments.EventListFragment;
 import com.example.r3l0ad3d.tourmate.Fragments.MomentGalleryFragment;
 import com.example.r3l0ad3d.tourmate.Fragments.ProfileFragment;
+import com.example.r3l0ad3d.tourmate.ModelClass.UserInformation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,DatabseConnectionCheck{
+
+    private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private static String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,15 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        userId = getIntent().getStringExtra("userId");
+
+        auth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+            }
+        };
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -73,6 +90,18 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        auth.removeAuthStateListener(authStateListener);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -106,5 +135,10 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public String getUser() {
+        return userId;
     }
 }
