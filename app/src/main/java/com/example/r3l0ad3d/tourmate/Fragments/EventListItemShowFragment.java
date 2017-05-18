@@ -1,7 +1,6 @@
 package com.example.r3l0ad3d.tourmate.Fragments;
 
 
-import android.app.ProgressDialog;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,9 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.r3l0ad3d.tourmate.Adapter.AdapterNearByItem;
+import com.example.r3l0ad3d.tourmate.Adapter.PageAdapterELIS;
 import com.example.r3l0ad3d.tourmate.DatabseConnectionCheck;
 import com.example.r3l0ad3d.tourmate.HomeActivity;
 import com.example.r3l0ad3d.tourmate.ModelClass.Event;
@@ -23,12 +22,8 @@ import com.example.r3l0ad3d.tourmate.Weather.Interface.WeatherApi;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.ForeCastReport;
 import com.example.r3l0ad3d.tourmate.Weather.ModelClass.WeatherModelResponse;
 import com.example.r3l0ad3d.tourmate.databinding.FragmentEventListItemShowBinding;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +48,7 @@ public class EventListItemShowFragment extends Fragment {
 
     private AdapterNearByItem adapterNearByItem;
     private AdapterWeatherForeCast adapterWeatherForeCast;
+    private PageAdapterELIS pageAdapterELIS;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -89,14 +85,17 @@ public class EventListItemShowFragment extends Fragment {
         databaseReference = firebaseDatabase.getReference("root").child("Event").child(userID).child(eventID);
 
 
+        //set data on event details
         binding.tvEventPlaceELIS.setText(event.getEventPlace());
         binding.tvFromDateELIS.setText(event.getFromDate());
         binding.tvToDateELIS.setText(event.getToDate());
         binding.tvEstimatedBudgetELIS.setText(event.getEstimatedBudget());
 
+        //recycle view adapter initial
         adapterNearByItem = new AdapterNearByItem(getContext(),nearByItemList);
         adapterWeatherForeCast = new AdapterWeatherForeCast(getContext(),foreCastReportList);
 
+        //layout manager set
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
 
@@ -106,11 +105,22 @@ public class EventListItemShowFragment extends Fragment {
         binding.rvForeCastWeatherELIS.setLayoutManager(layoutManager);
         binding.rvNearByELIS.setLayoutManager(layoutManager1);
 
+        //adapter set on recycle view
         binding.rvForeCastWeatherELIS.setAdapter(adapterWeatherForeCast);
         binding.rvNearByELIS.setAdapter(adapterNearByItem);
 
+
+
+        //populate recycle view
         getReport();
         setNearByData();
+
+        //page adapter set on view pager
+        pageAdapterELIS = new PageAdapterELIS(getFragmentManager());
+
+        binding.pageViewerELIS.setAdapter(pageAdapterELIS);
+        binding.tabsELIS.setupWithViewPager(binding.pageViewerELIS);
+
 
         //Toast.makeText(getContext(),""+foreCastReportList.size(),Toast.LENGTH_LONG).show();
 
